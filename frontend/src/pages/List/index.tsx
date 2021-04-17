@@ -2,6 +2,8 @@ import React, {useMemo, useState, useEffect} from 'react';
 
 import { Container, Content, Filters } from './styles';
 
+import api from '../../services/api';
+
 import ContentHeader from '../../components/ContentHeader';
 import SelectInput from '../../components/SelectInput';
 import HistoryFinanceCard from '../../components/HistoryFinanceCard';
@@ -10,8 +12,8 @@ import Years from '../../utils/years';
 import formatCurrency from '../../utils/formatCurrency';
 import formatDate from '../../utils/formatDate';
 
-import gains from '../../repositories/gains';
-import expenses from '../../repositories/expenses';
+//import gains from '../../repositories/gains';
+//import expenses from '../../repositories/expenses';
 
 
 interface IRouteParams {
@@ -33,13 +35,27 @@ interface IData {
 
 const List: React.FC<IRouteParams> = ({ match }) => {
   const [data, setData] = useState<IData[]>([]);
+  const [gains, setGains] = useState<any[]>([]);
+  const [expenses, setExpenses] = useState<any[]>([]);
   const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth() + 1));
   const [yearSelected, setYearSelected] = useState<string>(String(new Date().getFullYear()));
   
   const { type } = match.params;
 
+  async function loadMovements () {
+    await api.get(`/movements/type/${match.params.type}`)
+      .then(response => {
+        type === '1' ? setGains(response.data) : setExpenses(response.data)
+      })
+    console.log('gains');
+    console.log(gains);
+    console.log('expenses')
+    console.log(expenses)
+  }
+
+
   const infos = useMemo(() => {
-    return type === 'entry-balance' ? {
+    return type === '1'? {
       title: 'Entradas',
       lineColor: '#F7931B'
     } : {
@@ -49,12 +65,13 @@ const List: React.FC<IRouteParams> = ({ match }) => {
   }, [type]);
 
   const listData = useMemo(() => {
-    return type === 'entry-balance' ? gains : expenses;
-  }, [type]);
+    return type === '1' ? gains : expenses;
+  }, [type, expenses, gains]);
 
   useEffect(() => {
+    loadMovements();
     const filteredData = listData.filter(item => {
-      const date = new Date(item.date);
+      const date = new Date(item.movement_date);
       const month = String(date.getMonth() + 1);
       const year = String(date.getFullYear());
 
@@ -66,9 +83,9 @@ const List: React.FC<IRouteParams> = ({ match }) => {
         id: String(new Date().getTime()) + item.amount,
         description: item.description,
         amountFormatted: formatCurrency(Number(item.amount)),
-        frequency: item.frequency,
-        dateFormatted: formatDate(item.date),
-        tagColor: item.frequency === 'recorrente' ? '#4E41F0' : '#E44C4E'
+        frequency: item.frequency === 'R' ? 'Recorrente' : 'Eventual',
+        dateFormatted: formatDate(item.movement_date),
+        tagColor: item.frequency === 'R' ? '#4E41F0' : '#E44C4E'
       }
     })
 
