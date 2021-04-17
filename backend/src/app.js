@@ -14,7 +14,7 @@ app.use(express.json({ type: 'application/vnd.api+json' }));
 app.use(cors());
 
 app.use(index);
-app.use('/api/', movementRoute);
-app.use('/api/', movementTypeRoute);
+app.use('/', movementRoute);
+app.use('/', movementTypeRoute);
 
 module.exports = app;

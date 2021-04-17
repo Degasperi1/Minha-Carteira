@@ -27,7 +27,7 @@ exports.listAllMovements = async (req, res) => {
         'b.frequency, ' +
         'b.mov_type, ' +
         'a.amount, ' +
-        'a.movement_date, ' +
+        'to_char(a.movement_date, \'YYYY-MM-DD\') as movement_date, ' +
         'c.id_user, ' +
         'c.ds_email, ' +
         'c.nm_user ' +
@@ -55,7 +55,7 @@ exports.findMovementById = async (req, res) => {
         'b.frequency, ' +
         'b.mov_type, ' +
         'a.amount, ' +
-        'a.movement_date, ' +
+        'to_char(a.movement_date, \'YYYY-MM-DD\') as movement_date, ' +
         'c.id_user, ' +
         'c.ds_email, ' +
         'c.nm_user ' +
@@ -68,6 +68,35 @@ exports.findMovementById = async (req, res) => {
         'AND a.id_user = c.id_user ' +
         'AND a.id_movement = $1 ',
     [movementId],
+  );
+  res.status(200).send(response.rows);
+};
+
+
+// ==> Método responsável por selecionar 'Movement' pelo 'movement_type':
+exports.findMovementByType = async (req, res) => {
+  const movementType = parseInt(req.params.id);
+  const response = await db.query(
+    'SELECT ' + 
+        'a.id_movement, ' +
+        'b.id_movement_type, ' +
+        'b.description, ' +
+        'b.frequency, ' +
+        'b.mov_type, ' +
+        'a.amount, ' +
+        'to_char(a.movement_date, \'YYYY-MM-DD\') as movement_date, ' +
+        'c.id_user, ' +
+        'c.ds_email, ' +
+        'c.nm_user ' +
+      'FROM ' +
+        'movements a, ' +
+        'movement_type b, ' +
+        'users c ' +
+      'WHERE ' +
+        'a.id_movement_type = b.id_movement_type ' +
+        'AND a.id_user = c.id_user ' +
+        'AND b.mov_type = $1 ',
+    [movementType],
   );
   res.status(200).send(response.rows);
 };
