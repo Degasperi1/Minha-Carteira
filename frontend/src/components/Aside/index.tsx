@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdDashboard, MdArrowDownward, MdArrowUpward, MdExitToApp } from 'react-icons/md';
+import { MdDashboard, MdArrowDownward, MdArrowUpward, MdExitToApp, MdLibraryAdd } from 'react-icons/md';
 
 
 import logoImg from '../../assets/logo.svg'
@@ -26,6 +26,10 @@ const Aside: React.FC = () => {
         <MenuItemLink href="/movements/type/2">
           <MdArrowDownward/>
           Saídas
+        </MenuItemLink>
+        <MenuItemLink href="/movements">
+          <MdLibraryAdd/>
+          Tipos de movimentações
         </MenuItemLink>
         <MenuItemLink href="#">
           <MdExitToApp/>

@@ -1,6 +1,7 @@
 import React, {useMemo, useState, useEffect} from 'react';
+import {Link} from 'react-router-dom';
 
-import { Container, Content, Filters } from './styles';
+import { Container, Content, Filters, ButtonNew } from './styles';
 
 import api from '../../services/api';
 
@@ -37,10 +38,11 @@ const List: React.FC<IRouteParams> = ({ match }) => {
   const [data, setData] = useState<IData[]>([]);
   const [gains, setGains] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
-  const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth() + 1));
+  const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth()));
   const [yearSelected, setYearSelected] = useState<string>(String(new Date().getFullYear()));
   
   const { type } = match.params;
+
 
   async function loadMovements () {
     await api.get(`/movements/type/${match.params.type}`)
@@ -80,54 +82,61 @@ const List: React.FC<IRouteParams> = ({ match }) => {
 
     const formattedData = filteredData.map(item => {
       return {
-        id: String(new Date().getTime()) + item.amount,
+        id: item.id_movement,
         description: item.description,
         amountFormatted: formatCurrency(Number(item.amount)),
         frequency: item.frequency === 'R' ? 'Recorrente' : 'Eventual',
         dateFormatted: formatDate(item.movement_date),
-        tagColor: item.frequency === 'R' ? '#4E41F0' : '#E44C4E'
+        tagColor: item.frequency === 'E' ? '#4E41F0' : '#E44C4E'
       }
     })
 
        setData(formattedData);
-  }, [monthSelected, yearSelected, listData]);
+  }, [monthSelected, yearSelected, type]);
 
   return (
-    <Container>
-      <ContentHeader title={infos.title} lineColor={infos.lineColor} >
-        <SelectInput options={Months} onChange={(e) => setMonthSelected(e.target.value)} defaultValue={monthSelected}/>
-        <SelectInput options={Years} onChange={(e) => setYearSelected(e.target.value)} defaultValue={yearSelected}/>
-      </ContentHeader>
-      
-      <Filters>
-        <button 
-          type="button"
-          className="tag-filter tag-filter-recurrent"
-        >
-          Recorrentes
-        </button>
-        <button 
-          type="button"
-          className="tag-filter tag-filter-eventual"
-        >
-          Eventuais
-        </button>
-      </Filters>
+      <Container>
+        <ContentHeader title={infos.title} lineColor={infos.lineColor} >
+          <SelectInput options={Months} onChange={(e) => setMonthSelected(e.target.value)} defaultValue={monthSelected}/>
+          <SelectInput options={Years} onChange={(e) => setYearSelected(e.target.value)} defaultValue={yearSelected}/>
+        </ContentHeader>
+        
+        <Filters>
+          <button 
+            type="button"
+            className="tag-filter tag-filter-recurrent"
+          >
+            Recorrentes
+          </button>
+          <button 
+            type="button"
+            className="tag-filter tag-filter-eventual"
+          >
+            Eventuais
+          </button>
+        </Filters>
 
-      <Content>
-        {
-          data.map(item => (
-            <HistoryFinanceCard 
-              key={item.id}
-              tagColor={item.tagColor}
-              title={item.description}
-              subtitle={item.dateFormatted}
-              amount={item.amountFormatted}
-            />  
-          ))
-        }
-      </Content>
-    </Container>
+        <Content>
+          {
+            data.map(item => (
+              <Link to={`/movements/${item.id}`} style={{ textDecoration: 'none' }}>  
+                <HistoryFinanceCard 
+                  key={item.id}
+                  tagColor={item.tagColor}
+                  title={item.description}
+                  subtitle={item.dateFormatted}
+                  amount={item.amountFormatted}
+                  />  
+              </Link>
+            ))
+          }
+        </Content>
+
+        <ButtonNew href="/movements">
+              <button type= "button"> NOVO </button>
+        </ButtonNew>
+      
+      </Container>
   );
 };
 
