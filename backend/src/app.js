@@ -7,6 +7,7 @@ const app = express();
 const index = require('./routes/index');
 const movementRoute = require('./routes/movements.routes');
 const movementTypeRoute = require('./routes/movementType.routes');
+const userRoute = require('./routes/user.routes');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -16,5 +17,6 @@ app.use(cors());
 app.use(index);
 app.use('/', movementRoute);
 app.use('/', movementTypeRoute);
+app.use('/', userRoute);
 
 module.exports = app;

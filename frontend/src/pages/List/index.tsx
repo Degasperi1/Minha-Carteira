@@ -1,5 +1,6 @@
 import React, {useMemo, useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
+import {MdAddCircle} from 'react-icons/md';
 
 import { Container, Content, Filters, ButtonNew } from './styles';
 
@@ -38,7 +39,7 @@ const List: React.FC<IRouteParams> = ({ match }) => {
   const [data, setData] = useState<IData[]>([]);
   const [gains, setGains] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
-  const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth()));
+  const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth() + 1));
   const [yearSelected, setYearSelected] = useState<string>(String(new Date().getFullYear()));
   
   const { type } = match.params;
@@ -49,10 +50,6 @@ const List: React.FC<IRouteParams> = ({ match }) => {
       .then(response => {
         type === '1' ? setGains(response.data) : setExpenses(response.data)
       })
-    console.log('gains');
-    console.log(gains);
-    console.log('expenses')
-    console.log(expenses)
   }
 
 
@@ -92,7 +89,7 @@ const List: React.FC<IRouteParams> = ({ match }) => {
     })
 
        setData(formattedData);
-  }, [monthSelected, yearSelected, type]);
+  }, [monthSelected, yearSelected, type, gains, expenses]);
 
   return (
       <Container>
@@ -133,7 +130,9 @@ const List: React.FC<IRouteParams> = ({ match }) => {
         </Content>
 
         <ButtonNew href="/movements">
-              <button type= "button"> NOVO </button>
+              <button type= "button" > 
+                <MdAddCircle/>
+              </button>
         </ButtonNew>
       
       </Container>

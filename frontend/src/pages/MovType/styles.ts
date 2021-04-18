@@ -47,6 +47,30 @@ export const ButtonNew = styled.a`
 
 `
 
+export const Input = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0;
+  align-items: flex-end;
+  align-content: flex-end;
+
+  span{
+    color: ${props => props.theme.colors.white};
+    margin: 5px 0;
+  }
+
+  input {
+    width: 30%;
+    font-size: 16px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    border: 1px solid ${props => props.theme.colors.warning};
+  }
+
+` 
+
 export const Filters = styled.div`
     width: 100%;
     display: flex;
