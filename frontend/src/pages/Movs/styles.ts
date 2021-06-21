@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   span{
-    color: #707070;
+    color: ${props => props.theme.colors.white};
     margin: 5px 0;
   }
 `;
@@ -21,7 +21,7 @@ export const Input = styled.div`
   margin: 20px 0;
 
   span{
-    color: #707070;
+    color: ${props => props.theme.colors.white};
     margin: 5px 0;
   }
 
@@ -135,8 +135,8 @@ export const TypeIcons = styled.div`
     margin: 10px;
     cursor: pointer;
 
-    svg{
-      fill: ${props => props.theme.colors.white};
+    > svg {
+        color: ${props => props.theme.colors.primary};
     }
 
     &:hover{
@@ -159,7 +159,7 @@ export const Select = styled.select`
   
   
   span{
-    color: #707070;
+    color: ${props => props.theme.colors.white};
     margin: 5px 0;
   }
 

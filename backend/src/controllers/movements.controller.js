@@ -101,6 +101,40 @@ exports.findMovementByType = async (req, res) => {
   res.status(200).send(response.rows);
 };
 
+
+// ==> Método responsável por selecionar 'Movement' pelo 'movement_type' e espaço de datas:
+exports.findMovementByTypeDate = async (req, res) => {
+  const movementType = parseInt(req.params.id);
+  const dtInicio = req.params.dtIni;
+  const dtFim = req.params.dtFim;
+  const response = await db.query(
+    'SELECT ' + 
+        'a.id_movement, ' +
+        'b.id_movement_type, ' +
+        'b.description, ' +
+        'CASE WHEN b.frequency = \'R\' THEN \'Recorrente\' ELSE \'Eventual\' END as frequency, ' +
+        'CASE WHEN b.mov_type = \'1\' THEN \'Entrada\' ELSE \'Saída\' END as mov_type, ' +
+        'a.amount, ' +
+        'to_char(a.movement_date, \'DD/MM/YYYY\') as movement_date, ' +
+        'c.id_user, ' +
+        'c.ds_email, ' +
+        'c.nm_user ' +
+      'FROM ' +
+        'movements a, ' +
+        'movement_type b, ' +
+        'users c ' +
+      'WHERE ' +
+        'a.id_movement_type = b.id_movement_type ' +
+        'AND a.id_user = c.id_user ' +
+        'AND a.movement_date >= $2 ' +
+        'AND a.movement_date <= $3 ' +
+        'AND b.mov_type = $1 ' +
+      'ORDER BY a.movement_date ',
+    [movementType, dtInicio, dtFim],
+  );
+  res.status(200).send(response.rows);
+};
+
 // ==> Método responsável por atualizar um 'Movement' pelo 'Id':
 exports.updateMovementById = async (req, res) => {
   const movementId = parseInt(req.params.id);

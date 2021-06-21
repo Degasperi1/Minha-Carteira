@@ -67,6 +67,10 @@ const Aside: React.FC = () => {
           <MdLibraryAdd/>
           Tipos de movimentações
         </MenuItemLink>
+        <MenuItemLink href="/reports">
+          <MdLibraryAdd/>
+          Relatórios
+        </MenuItemLink>
         <MenuItemButton onClick={signOut}>
           <MdExitToApp/>
           Sair

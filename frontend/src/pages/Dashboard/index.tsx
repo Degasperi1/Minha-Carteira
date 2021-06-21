@@ -30,7 +30,7 @@ import {
 
 
 const Dashboard: React.FC = () => {
-    const [monthSelected, setMonthSelected] = useState<number>(new Date().getMonth() + 1);
+    const [monthSelected, setMonthSelected] = useState<number>(new Date().getMonth() - 4);
     const [yearSelected, setYearSelected] = useState<number>(new Date().getFullYear());
     const [gains, setGains] = useState<any[]>([]);
     const [expenses, setExpenses] = useState<any[]>([]);

@@ -18,7 +18,7 @@ export const Input = styled.div`
   margin: 20px 0;
 
   span{
-    color: #707070;
+    color: ${props => props.theme.colors.white};
     margin: 5px 0;
   }
 

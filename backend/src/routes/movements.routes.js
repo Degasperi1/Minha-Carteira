@@ -15,6 +15,9 @@ router.get('/movements/:id', movementController.findMovementById);
 // ==> Rota responsável por selecionar 'Movement' pelo 'Type': (GET): localhost:3000/api/movements/type/:id
 router.get('/movements/type/:id', movementController.findMovementByType);
 
+// ==> Rota responsável por selecionar 'Movement' pelo 'Type' e periodo: (GET): localhost:3000/api/movements/type/:id:dtIni:dtFim
+router.get('/movements/type/:id/:dtIni/:dtFim', movementController.findMovementByTypeDate);
+
 // ==> Rota responsável por atualizar 'Movement' pelo 'Id': (PUT): localhost: 3000/api/movements/:id
 router.put('/movements/:id', movementController.updateMovementById);
 

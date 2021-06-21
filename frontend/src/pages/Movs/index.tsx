@@ -138,6 +138,7 @@ function Movs({ match }: MovTypeProps) {
         
         let oldDate = new Date(date);
         let newDate = new Date(oldDate.setMonth(oldDate.getMonth() + i));
+        newDate.setDate(newDate.getDate() + 2);
 
         await api.post('/movements', {
           amount: newAmount,
