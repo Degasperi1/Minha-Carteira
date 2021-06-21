@@ -1,13 +1,15 @@
 import React, {useMemo, useState, useEffect} from 'react';
 import {Redirect} from 'react-router-dom';
-import {format} from 'date-fns';
+import { makeStyles } from '@material-ui/core/styles';
 
 import api from '../../services/api';
 
 import Entry from '../../assets/arrow-up.svg';
 import Exit from '../../assets/arrow-down.svg';
 
-import { Container, Form, Input, Options, SaveButton, TypeIcons } from './styles';
+import formatDate from '../../utils/formatNewDate';
+
+import { Container, Form, Input, Options, SaveButton, TypeIcons, Select, Checkbox, CheckboxLabel } from './styles';
 
 interface MovTypeProps {
   match: {
@@ -23,15 +25,39 @@ const typeIcons = [
   Exit
 ];
 
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
 function Movs({ match }: MovTypeProps) {
   
-  const [type, setType] = useState<string>('1');
+  const [type, setType] = useState<string>('0');
   const [description, setDescription] = useState<string>();
   const [amount, setAmount] = useState<string>();
-  const [date, setDate] = useState<string>();
+  const [quantity, setQuantity] = useState<string>('1');
+  const [option, setOption] = useState<string>('0');
+  const [optionPart, setOptionPart] = useState<string>('0');
+  const [date, setDate] = useState<string>('');
   const [redirect, setRedirect] = useState<boolean>(false);
   const [user, setUser] = useState<string>();
   
+
+  const [movementTypes, setMovementTypes] = useState<any[]>([]);
+  const [movs, setMovs] = useState<any[]>([]);
+  
+  async function loadMovements () {
+    await api.get(`/movementTypes`)
+      .then(response => {
+        setMovementTypes(response.data)
+      })
+  }
+
   
 
   async function LoadTaskDetails(){
@@ -49,8 +75,6 @@ function Movs({ match }: MovTypeProps) {
   }
 
   async function Clear(){
-    console.log('limpando');
-    setType('1');
     setDescription('');
     setDate('');
     setAmount('');
@@ -71,18 +95,32 @@ function Movs({ match }: MovTypeProps) {
     //validação dos dados
     if(!description){
       return alert("Você precisa informar a descrição")
-    }else if(!type){
-      return alert("Você precisa selecionar o tipo da movimentação")
+    }else if(!amount){
+      return alert("Você precisa selecionar o valor")
     }else if(!date){
       return alert("Você precisa definir a data da movimentação")
+    }else if(parseInt(quantity) < 1){
+      return alert("Quantidade não pode ser menor do que 1")
+    }else if(option === '0' && optionPart === '0' && parseInt(quantity) > 1){
+      return alert("Selecione uma opção de repetição (parcelar ou repetir valor)")
+    }else if(option === '1' && optionPart === '2'){
+      return alert("Selecione apenas uma opção de repetição (parcelar ou repetir valor)")
+    }
+
+    let newAmount;
+
+    if (optionPart == '2'){
+      newAmount = (parseFloat(amount) / parseFloat(quantity)).toString();
+    }else{
+      newAmount = amount;
     }
 
     if(match.params.id){
       await api.put(`/movements/${match.params.id}`, {
         amount,
-        movementDate: date,
+        movementDate: date + 1,
         user,
-        movementType: type,
+        movementType: description,
       }).then(() => 
         setRedirect(true)
       )
@@ -96,28 +134,43 @@ function Movs({ match }: MovTypeProps) {
           movementType: type
         }
       );
-      await api.post('/movements', {
-        amount,
-        movementDate: date,
-        user,
-        movementType: type,
-      }).then(() =>
-        setRedirect(true)
-      )
-    }
+      for(let i = 0; i < parseInt(quantity); i ++){
+        
+        let oldDate = new Date(date);
+        let newDate = new Date(oldDate.setMonth(oldDate.getMonth() + i));
+        newDate.setDate(newDate.getDate() + 2);
 
-    console.log()
+        await api.post('/movements', {
+          amount: newAmount,
+          movementDate: formatDate(newDate),
+          user,
+          movementType: description,
+        }).then(() =>
+          setRedirect(true)
+        )
+      }
+    }
   }
 
     //atualizar o conteúdo a cada vez que a tela for carregada ou o filtro for atualizado
     useEffect(() => {
       LoadTaskDetails();
+      loadMovements();
+      const filteredData = movementTypes.filter(item => {
+        return item.mov_type === type;
+      });
+      setMovs(filteredData);
+
+      console.log(filteredData);
       setUser('1');
-    }, [match.params.id])
+      console.log(movementTypes);
+      console.log(type);
+    }, [match.params.id, type])
 
   return (
     <Container>
       { redirect && <Redirect to="/movements/type/1" /> }
+      <h1>Cadastro de Movimentações</h1>
       <Form>
       <TypeIcons>
           {
@@ -129,17 +182,35 @@ function Movs({ match }: MovTypeProps) {
               ))
           }
         </TypeIcons>
-        <Input>
+        
+        <span>Descrição</span>
+        <Select
+          name="mov-type"
+          id="selectmovtype"
+          onChange={e => setDescription(e.target.value)} value={description}
+        >
+          <option value="0"></option>
+          {
+            movs.map(item => (
+              <option value={item.id_movement_type}>{item.description}</option>
+            ))
+            
+          }
+        </Select>
+
+
+        {/* <Input>
             <span>Descrição</span>
             <input type="text" placeholder="Descrição" 
             onChange={e => setDescription(e.target.value)} value={description}/>
-          </Input>
+          </Input> */}
 
         <Input>
             <span>Valor</span>
             <input type="number" placeholder="Valor" 
             onChange={e => setAmount(e.target.value)} value={amount}/>
           </Input>
+        
 
           <Input>
             <span>Data</span>
@@ -147,6 +218,28 @@ function Movs({ match }: MovTypeProps) {
             onChange={e => setDate(e.target.value)} value={date}/>
           </Input>
 
+          <Checkbox type="checkbox" id="check-repeat" onChange={e => setOption(e.target.checked == true ? '1' : '0')}></Checkbox>
+          
+          <CheckboxLabel>
+            <label>
+              Repetir    
+            </label>
+          </CheckboxLabel>
+
+          <Checkbox type="checkbox" id="check-part" onChange={e => setOptionPart(e.target.checked == true ? '2' : '0')}></Checkbox>
+          
+          <CheckboxLabel>
+            <label>
+              Parcelar    
+            </label>
+          </CheckboxLabel>
+
+        <Input id="quantity-input">
+            <span>Quantidade</span>
+            <input type="number" placeholder="Quantidade" 
+            onChange={e => setQuantity(e.target.value)} value={quantity}/>
+          </Input>
+            
           <Options>
 
             {match.params.id && <button type="button" onClick={Remove}>EXCLUIR</button> }

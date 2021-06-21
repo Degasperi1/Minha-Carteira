@@ -35,10 +35,15 @@ export const ButtonNew = styled.a`
     &:hover{
       opacity: 0.7;
     }
-  }
 
+    > svg {
+      height: 100%;
+      width: 100%;
+      font-size: 20px;
+      margin-right: 5px;
+    }
   
-
+  }
 
 `
 

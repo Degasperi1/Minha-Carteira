@@ -1,7 +1,10 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-
+  span{
+    color: ${props => props.theme.colors.white};
+    margin: 5px 0;
+  }
 `;
 
 export const Form = styled.div`
@@ -18,7 +21,7 @@ export const Input = styled.div`
   margin: 20px 0;
 
   span{
-    color: #707070;
+    color: ${props => props.theme.colors.white};
     margin: 5px 0;
   }
 
@@ -71,7 +74,6 @@ export const Options = styled.div`
     background: ${props => props.theme.colors.warning};
     font-size: 18px;
     cursor: pointer;
-
 
     &:hover{
       opacity: 0.7;
@@ -133,9 +135,52 @@ export const TypeIcons = styled.div`
     margin: 10px;
     cursor: pointer;
 
+    > svg {
+        color: ${props => props.theme.colors.primary};
+    }
+
     &:hover{
       opacity: 0.5;
     }
   }
 
+`
+
+export const Select = styled.select`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 5px 0 20px 0;
+
+  font-size: 16px;
+  padding: 15px;
+  border: none;
+  border-bottom: 1px solid ${props => props.theme.colors.warning};
+  
+  
+  span{
+    color: ${props => props.theme.colors.white};
+    margin: 5px 0;
+  }
+
+  select {
+  }
+
+`
+
+export const Checkbox = styled.input`
+  width: 15px;
+  height: 15px;
+
+
+  &:checked {
+    background: blue;
+  }
+`
+
+export const CheckboxLabel = styled.label`
+  color: ${props => props.theme.colors.white};
+  margin-left: 10px;
+  margin-right: 20px;
+  font-size: 16px;
 `

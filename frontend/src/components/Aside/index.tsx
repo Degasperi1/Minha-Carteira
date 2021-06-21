@@ -1,21 +1,57 @@
-import React from 'react';
-import { MdDashboard, MdArrowDownward, MdArrowUpward, MdExitToApp, MdLibraryAdd } from 'react-icons/md';
+import React, {useState} from 'react';
+import Toggle from '../Toggle';
+import { MdDashboard, MdArrowDownward, MdArrowUpward, MdExitToApp, MdLibraryAdd, MdClose, MdMenu } from 'react-icons/md';
 
 
 import logoImg from '../../assets/logo.svg'
 
-import { Container, Header, LogoImg, MenuContainer, MenuItemLink, Title } from './styles';
+import { 
+  Container,
+  Header,
+  LogImg,
+  Title,
+  MenuContainer,
+  MenuItemLink,
+  MenuItemButton,
+  ToggleMenu,
+  ThemeToggleFooter,
+}  from './styles';
+
+import {useAuth} from '../../hooks/auth';
+import { useTheme } from '../../hooks/theme';
 
 const Aside: React.FC = () => {
+  const {signOut} = useAuth();
+
+  const { toggleTheme, theme } = useTheme();
+
+  const [toggleMenuIsOpened, setToggleMenuIsOpened ] = useState(false);
+  const [darkTheme, setDarkTheme] = useState(() => theme.title === 'dark' ? true : false);
+
+
+  const handleToggleMenu = () => {
+      setToggleMenuIsOpened(!toggleMenuIsOpened);
+  }
+
+
+  const handleChangeTheme = () => {
+      setDarkTheme(!darkTheme);
+      toggleTheme();
+  }
+
   return (
-    <Container>
+    <Container menuIsOpen={toggleMenuIsOpened}>
       <Header>
-        <LogoImg src={logoImg} alt="Logo Minha Carteira" />
+        <ToggleMenu onClick={handleToggleMenu}>
+          { toggleMenuIsOpened ? <MdClose /> : <MdMenu /> }
+        </ToggleMenu>
+
+        <LogImg src={logoImg} alt="Logo Minha Carteira" />
         <Title>Minha Carteira</Title>
       </Header>
 
       <MenuContainer>
-        <MenuItemLink href="/dashboard">
+        <MenuItemLink href="/">
           <MdDashboard/>
           Dashboard
         </MenuItemLink>
@@ -27,17 +63,29 @@ const Aside: React.FC = () => {
           <MdArrowDownward/>
           Saídas
         </MenuItemLink>
-        <MenuItemLink href="/movements">
+        <MenuItemLink href="/movementType">
           <MdLibraryAdd/>
           Tipos de movimentações
         </MenuItemLink>
-        <MenuItemLink href="#">
+        <MenuItemLink href="/reports">
+          <MdLibraryAdd/>
+          Relatórios
+        </MenuItemLink>
+        <MenuItemButton onClick={signOut}>
           <MdExitToApp/>
           Sair
-        </MenuItemLink>
+        </MenuItemButton>
       </MenuContainer>
+      <ThemeToggleFooter menuIsOpen={toggleMenuIsOpened}>
+          <Toggle
+              labelLeft="Light"
+              labelRight="Dark"
+              checked={darkTheme}
+              onChange={handleChangeTheme}
+          />
+      </ThemeToggleFooter>
     </Container>
   );
-};
+}
 
 export default Aside;
