@@ -167,3 +167,20 @@ export const Select = styled.select`
   }
 
 `
+
+export const Checkbox = styled.input`
+  width: 15px;
+  height: 15px;
+
+
+  &:checked {
+    background: blue;
+  }
+`
+
+export const CheckboxLabel = styled.label`
+  color: ${props => props.theme.colors.white};
+  margin-left: 10px;
+  margin-right: 20px;
+  font-size: 16px;
+`
