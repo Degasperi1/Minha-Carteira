@@ -109,6 +109,7 @@ function MovTypeRegister({ match }: MovTypeRegisterProps) {
   return (
     <Container>
       { redirect && <Redirect to="/movementType" /> }
+      <h1>Cadastro de Tipos de Movimentações</h1>
       <Form>
       <TypeIcons>
           {

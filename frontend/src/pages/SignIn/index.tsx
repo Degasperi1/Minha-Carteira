@@ -18,8 +18,6 @@ import {
 const SignIn: React.FC = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');    
-    const [passwordHash, setPasswordHash] = useState<string>('');    
-
 
     const { signIn } = useAuth();
 
@@ -30,7 +28,7 @@ const SignIn: React.FC = () => {
                 <h2>Minha Carteira</h2>
             </Logo>
 
-            <Form onSubmit={() => signIn(email, password, passwordHash)}>
+            <Form onSubmit={() => signIn(email, password)}>
                 <FormTitle>Entrar</FormTitle>
 
                 <Input 
@@ -46,7 +44,7 @@ const SignIn: React.FC = () => {
                     onChange={(e) => setPassword(e.target.value)}
                 />
 
-               <Button type="submit" onClick={() => setPasswordHash('d41d8cd98f00b204e9800998ecf8427e')} >Acessar</Button>
+               <Button type="submit" >Acessar</Button>
             </Form>
         </Container>
     );

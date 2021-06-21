@@ -1,12 +1,13 @@
 import React, {useMemo, useState, useEffect} from 'react';
 import {Redirect} from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 
 import api from '../../services/api';
 
 import Entry from '../../assets/arrow-up.svg';
 import Exit from '../../assets/arrow-down.svg';
 
-import { Container, Form, Input, Options, SaveButton, TypeIcons } from './styles';
+import { Container, Form, Input, Options, SaveButton, TypeIcons, Select } from './styles';
 
 interface MovTypeProps {
   match: {
@@ -22,15 +23,36 @@ const typeIcons = [
   Exit
 ];
 
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
 function Movs({ match }: MovTypeProps) {
   
-  const [type, setType] = useState<string>('1');
+  const [type, setType] = useState<string>('0');
   const [description, setDescription] = useState<string>();
   const [amount, setAmount] = useState<string>();
-  const [date, setDate] = useState<string>();
+  const [date, setDate] = useState<string>('');
   const [redirect, setRedirect] = useState<boolean>(false);
   const [user, setUser] = useState<string>();
   
+
+  const [movementTypes, setMovementTypes] = useState<any[]>([]);
+  const [movs, setMovs] = useState<any[]>([]);
+  
+  async function loadMovements () {
+    await api.get(`/movementTypes`)
+      .then(response => {
+        setMovementTypes(response.data)
+      })
+  }
+
   
 
   async function LoadTaskDetails(){
@@ -48,8 +70,6 @@ function Movs({ match }: MovTypeProps) {
   }
 
   async function Clear(){
-    console.log('limpando');
-    setType('1');
     setDescription('');
     setDate('');
     setAmount('');
@@ -70,8 +90,8 @@ function Movs({ match }: MovTypeProps) {
     //validação dos dados
     if(!description){
       return alert("Você precisa informar a descrição")
-    }else if(!type){
-      return alert("Você precisa selecionar o tipo da movimentação")
+    }else if(!amount){
+      return alert("Você precisa selecionar o valor")
     }else if(!date){
       return alert("Você precisa definir a data da movimentação")
     }
@@ -81,7 +101,7 @@ function Movs({ match }: MovTypeProps) {
         amount,
         movementDate: date,
         user,
-        movementType: type,
+        movementType: description,
       }).then(() => 
         setRedirect(true)
       )
@@ -99,7 +119,7 @@ function Movs({ match }: MovTypeProps) {
         amount,
         movementDate: date,
         user,
-        movementType: type,
+        movementType: description,
       }).then(() =>
         setRedirect(true)
       )
@@ -111,12 +131,22 @@ function Movs({ match }: MovTypeProps) {
     //atualizar o conteúdo a cada vez que a tela for carregada ou o filtro for atualizado
     useEffect(() => {
       LoadTaskDetails();
+      loadMovements();
+      const filteredData = movementTypes.filter(item => {
+        return item.mov_type === type;
+      });
+      setMovs(filteredData);
+
+      console.log(filteredData);
       setUser('1');
-    }, [match.params.id])
+      console.log(movementTypes);
+      console.log(type);
+    }, [match.params.id, type])
 
   return (
     <Container>
       { redirect && <Redirect to="/movements/type/1" /> }
+      <h1>Cadastro de Movimentações</h1>
       <Form>
       <TypeIcons>
           {
@@ -128,11 +158,28 @@ function Movs({ match }: MovTypeProps) {
               ))
           }
         </TypeIcons>
-        <Input>
+        
+        <span>Descrição</span>
+        <Select
+          name="mov-type"
+          id="selectmovtype"
+          onChange={e => setDescription(e.target.value)} value={description}
+        >
+          <option value="0"></option>
+          {
+            movs.map(item => (
+              <option value={item.id_movement_type}>{item.description}</option>
+            ))
+            
+          }
+        </Select>
+
+
+        {/* <Input>
             <span>Descrição</span>
             <input type="text" placeholder="Descrição" 
             onChange={e => setDescription(e.target.value)} value={description}/>
-          </Input>
+          </Input> */}
 
         <Input>
             <span>Valor</span>

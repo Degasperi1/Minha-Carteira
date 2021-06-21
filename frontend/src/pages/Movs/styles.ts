@@ -1,7 +1,10 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-
+  span{
+    color: #707070;
+    margin: 5px 0;
+  }
 `;
 
 export const Form = styled.div`
@@ -72,7 +75,6 @@ export const Options = styled.div`
     font-size: 18px;
     cursor: pointer;
 
-
     &:hover{
       opacity: 0.7;
     }
@@ -133,9 +135,35 @@ export const TypeIcons = styled.div`
     margin: 10px;
     cursor: pointer;
 
+    svg{
+      fill: ${props => props.theme.colors.white};
+    }
+
     &:hover{
       opacity: 0.5;
     }
+  }
+
+`
+
+export const Select = styled.select`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 5px 0 20px 0;
+
+  font-size: 16px;
+  padding: 15px;
+  border: none;
+  border-bottom: 1px solid ${props => props.theme.colors.warning};
+  
+  
+  span{
+    color: #707070;
+    margin: 5px 0;
+  }
+
+  select {
   }
 
 `

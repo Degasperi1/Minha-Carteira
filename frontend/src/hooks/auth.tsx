@@ -4,7 +4,7 @@ import api from '../services/api';
 
 interface IAuthContext {
     logged: boolean;
-    signIn(email: string, password: string, passwordHash: string): void;
+    signIn(email: string, password: string): void;
     signOut(): void;
 }
 
@@ -12,8 +12,15 @@ interface IAuthContext {
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 
+
 const AuthProvider: React.FC = ({ children }) => {
     const md5 = require('md5');
+    const [passwordHash, setPasswordHash] = useState<string>(md5('12345678'));
+    
+    
+
+
+    
     const [logged, setLogged] = useState<boolean>(() => {
         const isLogged = localStorage.getItem('@minha-carteira:logged');
         
@@ -27,14 +34,20 @@ const AuthProvider: React.FC = ({ children }) => {
     async function getPassword(){
         await api.get(`/user/${userEntry}`)
             .then(response => {
-                setPasswordEntry(response.data[0].ds_password)
+                setPasswordHash(response.data[0].ds_password)
             })
         }
     
 
-    const signIn = (email: string, password: string, passwordHash: string) => {       
+    const signIn = (email: string, password: string) => {  
 
-        if(md5(passwordEntry) === passwordHash){
+        getPassword();
+
+        setPasswordEntry(password);
+        console.log('pass ' + password);
+        console.log('pass hash');
+
+        if(md5(password) === passwordHash){
             localStorage.setItem('@minha-carteira:logged', 'true');
             setLogged(true);
         }else{
